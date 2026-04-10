@@ -14,7 +14,7 @@ obj-vdso := $(addprefix $(obj)/, $(obj-vdso))
 
 ldflags-y := -shared -nostdlib -soname=linux-vdso.so.1  --hash-style=sysv \
 		--build-id -n -T
-ccflags-y += $(DISABLE_LTO)
+ccflags-y += $(DISABLE_LTO) -fintegrated-as
 
 CFLAGS_REMOVE_vgettimeofday.o += $(CC_FLAGS_SCS)
 
@@ -53,7 +53,7 @@ $(obj-vdso): %.o: %.S FORCE
 
 # Actual build commands
 quiet_cmd_vdsoas = VDSOA   $@
-      cmd_vdsoas = $(CC) $(a_flags) -c -o $@ $<
+      cmd_vdsoas = $(CC) -E $(a_flags) $< | $(CROSS_COMPILE)as -o $@
 
 # Install commands for the unstripped file
 quiet_cmd_vdso_install = INSTALL $@
